@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/pages/todo_list_page.dart';
 
+// Comentário para verificação
+
 void main(){
   runApp(const MyApp());
 }
