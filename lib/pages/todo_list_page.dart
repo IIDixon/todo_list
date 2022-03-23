@@ -20,30 +20,33 @@ class _TodoListPageState extends State<TodoListPage> {
 
   void onDelete(Todo todo){ // Função que será utilizada pelo widget filho (todo_list_item)
                             // para deletar uma determinada tarefa
-    deletedTodo = todo;
-    deletedTodoPos = todos.indexOf(todo);
+    deletedTodo = todo; // Armazena os dados do card deletado
+    deletedTodoPos = todos.indexOf(todo); // Armazena a posição do cad deletado
 
     setState(() {
-      todos.remove(todo);
+      todos.remove(todo); // Remove o card
     });
 
-    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).clearSnackBars(); // Limpa as snackbars visiveis antes de mostrar a nova
     
     ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tarefa ${todo.title} foi removida com sucesso!', style: TextStyle(
-          color: const Color(0xff060708),
-        ),),
+        SnackBar(
+          content: Text('Tarefa ${todo.title} foi removida com sucesso!',
+            style: const TextStyle(
+            color: Color(0xff060708),
+            ),
+          ),
           backgroundColor: Colors.white,
           action: SnackBarAction(
             label: 'Desfazer',
             textColor: const Color(0xff00d7f3),
             onPressed: (){
               setState(() {
-                todos.insert(deletedTodoPos!, deletedTodo!);
+                todos.insert(deletedTodoPos!, deletedTodo!); // Funçao que reinsere o card deletado na mesma posição que ele se encontrava
               });
             },
           ),
-          duration: const Duration(seconds: 5),
+          duration: const Duration(seconds: 5), // Duração que a snackbar ficará ativa
         ),
     );
   }
@@ -77,13 +80,13 @@ class _TodoListPageState extends State<TodoListPage> {
                       onPressed: (){
                         String text  = todoController.text;
                         setState(() {
-                          Todo newTodo = Todo(
+                          Todo newTodo = Todo( // Cria uma classe 'Todo'
                             title: text,
                             date: DateTime.now(),
                           );
-                          todos.add(newTodo);
+                          todos.add(newTodo); // Adiciona a classe ao List 'todos'
                         });
-                        todoController.clear();
+                        todoController.clear(); // Limpa o controller do textfield, consequentemente limpa o textfield após inserir uma tarefa
                       },
                       style: ElevatedButton.styleFrom(
                         primary: const Color(0xff00d7f3),
@@ -124,8 +127,8 @@ class _TodoListPageState extends State<TodoListPage> {
                         },
                         child: const Text('Limpar Tudo'),
                         style: ElevatedButton.styleFrom(
-                        primary: const Color(0xff00d7f3),
-                        padding: const EdgeInsets.all(14),
+                          primary: const Color(0xff00d7f3),
+                          padding: const EdgeInsets.all(14),
                         ),
                     )
                   ],
