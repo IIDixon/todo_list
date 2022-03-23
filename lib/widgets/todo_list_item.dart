@@ -50,7 +50,7 @@ class TodoListItem extends StatelessWidget {
               caption: 'Deletar Tarefa',
               onTap: (){
                 onDelete(todo); // Chama a função criada no widget pai, passada via parâmetro no construtor
-                                // para deletar o card
+                                // para deletar o card passando como parâmetro a instância da classe 'todo' criada para este card
               },
             )
           ],

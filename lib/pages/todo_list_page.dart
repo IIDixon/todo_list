@@ -51,6 +51,43 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
+  void showDeleteTodosConfirmationDialog(){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Limpar Tudo?'),
+        content: Text('Você tem certeza que deseja apagar todos as tarefas?'),
+        actions: [
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancelar'),
+            style: TextButton.styleFrom(
+              primary: Color(0xff0d7f3),
+            ),
+          ),
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();
+              deleteAllTodos();
+            },
+            child: Text('Limpar Tudo'),
+            style: TextButton.styleFrom(
+              primary: Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void deleteAllTodos(){
+    setState(() {
+      todos.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -104,7 +141,7 @@ class _TodoListPageState extends State<TodoListPage> {
                   child: ListView(
                     shrinkWrap: true, // O tamanho da lista se torna o tamanho dos itens que houver nela
                     children: [
-                     for(Todo todo in todos)
+                     for(Todo todo in todos) // Cada item adicionado será incluído no list 'todos' e será construído o widget TodoListItem para cada item
                        TodoListItem(
                          todo: todo,
                          onDelete: onDelete, // Passa a função via parâmetro para o widget filho (todo_list_item)
@@ -121,9 +158,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                         onPressed: (){
-                          setState(() {
-                            todos.clear();
-                          });
+                          showDeleteTodosConfirmationDialog;
                         },
                         child: const Text('Limpar Tudo'),
                         style: ElevatedButton.styleFrom(
