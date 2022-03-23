@@ -10,7 +10,7 @@ class TodoListItem extends StatelessWidget {
 
   final Todo todo;
   final Function(Todo) onDelete; // Função criada que receberá a função do widget pai, passada via construtor
-                                // Necessário fazer isso para que seja atualizada em tempo real o list no widget pai
+                                //  Necessário fazer isso para que seja atualizada em tempo real o list no widget pai
 
   @override
   Widget build(BuildContext context) {
