@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:todo_list/models/todo.dart';
+import 'package:todo_list/repositories/todo_repository.dart';
 import 'package:todo_list/widgets/todo_list_item.dart';
 
 class TodoListPage extends StatefulWidget {
@@ -16,7 +17,19 @@ class _TodoListPageState extends State<TodoListPage> {
   Todo? deletedTodo;
   int? deletedTodoPos;
 
+  @override
+  void initState(){
+    super.initState();
+
+    todoRepository.getTodoList().then((value) {
+      setState(() {
+        todos = value;
+      });
+    });
+  }
+
   final TextEditingController todoController = TextEditingController();
+  final TodoRepository todoRepository = TodoRepository();
 
   void onDelete(Todo todo){ // Função que será utilizada pelo widget filho (todo_list_item)
                             // para deletar uma determinada tarefa
@@ -52,6 +65,7 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   void showDeleteTodosConfirmationDialog(){
+    print('Chamou a função');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -64,7 +78,7 @@ class _TodoListPageState extends State<TodoListPage> {
             },
             child: Text('Cancelar'),
             style: TextButton.styleFrom(
-              primary: Color(0xff0d7f3),
+              primary: Color(0xff00d7f3),
             ),
           ),
           TextButton(
@@ -124,6 +138,8 @@ class _TodoListPageState extends State<TodoListPage> {
                           todos.add(newTodo); // Adiciona a classe ao List 'todos'
                         });
                         todoController.clear(); // Limpa o controller do textfield, consequentemente limpa o textfield após inserir uma tarefa
+
+                        todoRepository.saveTodoList(todos);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: const Color(0xff00d7f3),
@@ -158,7 +174,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                         onPressed: (){
-                          showDeleteTodosConfirmationDialog;
+                          showDeleteTodosConfirmationDialog();
                         },
                         child: const Text('Limpar Tudo'),
                         style: ElevatedButton.styleFrom(
