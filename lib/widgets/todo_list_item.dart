@@ -10,6 +10,7 @@ class TodoListItem extends StatelessWidget {
 
   final Todo todo;
   final Function(Todo) onDelete; // Função criada que receberá a função do widget pai, passada via construtor
+                                // Necessário fazer isso para que seja atualizada em tempo real o list no widget pai
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class TodoListItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch, // Alinha o texto
               children: [
-                Text(DateFormat('dd/MM/yyyy - HH:mm').format(todo.date),
+                Text(DateFormat('dd/MM/yyyy - HH:mm').format(todo.date), // Formata a data/hora
                   style: const TextStyle(
                     fontSize: 12,
                   ),
@@ -40,7 +41,7 @@ class TodoListItem extends StatelessWidget {
               ],
             ),
           ),
-          actionExtentRatio: 0.25, // tamanho da área dos botões adicionais
+          actionExtentRatio: 0.25, // Tamanho da área dos botões adicionais
           actionPane: const SlidableStrechActionPane(), // Cria a ação de deslizar
           secondaryActions: [
             IconSlideAction( // Cria o botão de excluir
@@ -49,6 +50,7 @@ class TodoListItem extends StatelessWidget {
               caption: 'Deletar Tarefa',
               onTap: (){
                 onDelete(todo); // Chama a função criada no widget pai, passada via parâmetro no construtor
+                                // para deletar o card
               },
             )
           ],
