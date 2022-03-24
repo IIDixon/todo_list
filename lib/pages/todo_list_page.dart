@@ -16,13 +16,14 @@ class _TodoListPageState extends State<TodoListPage> {
 
   Todo? deletedTodo;
   int? deletedTodoPos;
+  String? errorText;
 
   @override
   void initState(){
     super.initState(); // Função chamada quando o app é iniciado
 
     todoRepository.getTodoList().then((value) { // Chama a função 'getTodoList', armazena a lista que retornará na variável 'value' que será uma lista
-      setState(() {                             // e depois insere essa lista na lista 'todos', que será carregada na tela as informações armazenadas no fechamento do app
+      setState(() {                             // e depois insere essa lista na lista 'todos', que será carregada na tela as informações que foram armazenadas no fechamento do app
         todos = value;
       });
     });
@@ -39,10 +40,11 @@ class _TodoListPageState extends State<TodoListPage> {
     setState(() {
       todos.remove(todo); // Remove o card
     });
+    todoRepository.saveTodoList(todos); // Salva a lista atualizada no JSON
 
     ScaffoldMessenger.of(context).clearSnackBars(); // Limpa as snackbars visiveis antes de mostrar a nova
     
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar( // Exibição da snackbar
         SnackBar(
           content: Text('Tarefa ${todo.title} foi removida com sucesso!',
             style: const TextStyle(
@@ -55,8 +57,9 @@ class _TodoListPageState extends State<TodoListPage> {
             textColor: const Color(0xff00d7f3),
             onPressed: (){
               setState(() {
-                todos.insert(deletedTodoPos!, deletedTodo!); // Funçao que reinsere o card deletado na mesma posição que ele se encontrava
+                todos.insert(deletedTodoPos!, deletedTodo!); // Funçao que reinsere o card deletado na lista e mesma posição em que ele se encontrava
               });
+              todoRepository.saveTodoList(todos); // Salva a lista atualizada no JSON
             },
           ),
           duration: const Duration(seconds: 5), // Duração que a snackbar ficará ativa
@@ -64,28 +67,28 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
-  void showDeleteTodosConfirmationDialog(){
+  void showDeleteTodosConfirmationDialog(){ // Função para exibição do alertdialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Limpar Tudo?'),
-        content: Text('Você tem certeza que deseja apagar todos as tarefas?'),
+        title: const Text('Limpar Tudo?'),
+        content: const Text('Você tem certeza que deseja apagar todos as tarefas?'),
         actions: [
           TextButton(
             onPressed: (){
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // Ao cancelar, apenas fecha o alertdialog
             },
-            child: Text('Cancelar'),
+            child: const Text('Cancelar'),
             style: TextButton.styleFrom(
-              primary: Color(0xff00d7f3),
+              primary: const Color(0xff00d7f3),
             ),
           ),
           TextButton(
             onPressed: (){
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // Ao clicar, fecha o alertdialog e depois executa a função de deletar as tarefas
               deleteAllTodos();
             },
-            child: Text('Limpar Tudo'),
+            child: const Text('Limpar Tudo'),
             style: TextButton.styleFrom(
               primary: Colors.red,
             ),
@@ -95,10 +98,11 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
-  void deleteAllTodos(){
+  void deleteAllTodos(){ // Função para deletar todas as tarefas
     setState(() {
       todos.clear();
     });
+    todoRepository.saveTodoList(todos); // Salva a lista atualizada no JSON
   }
 
   @override
@@ -116,10 +120,20 @@ class _TodoListPageState extends State<TodoListPage> {
                     Expanded(
                       child: TextField(
                         controller: todoController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
                           labelText: 'Adicione uma tarefa',
                           hintText: 'Ex. Estudar Flutter',
+                          errorText: errorText, // Função para exibir uma mensagem de erro
+                          labelStyle: const TextStyle(
+                            color: Color(0xff00d7f3),
+                          ),
+                          focusedBorder: const OutlineInputBorder( // Estilo da borda ao entrar em foco
+                            borderSide: BorderSide(
+                              color: Color(0xff00d7f3),
+                              width: 3,
+                            )
+                          )
                         ),
                       ),
                     ),
@@ -129,16 +143,24 @@ class _TodoListPageState extends State<TodoListPage> {
                     ElevatedButton(
                       onPressed: (){
                         String text  = todoController.text;
+
+                        if(text.isEmpty){ // Verifica se o campo foi preenchido, caso não, exibe mensagem de erro
+                          setState(() {
+                            errorText = 'Obrigatório informar o nome da tarefa';
+                          });
+                          return;
+                        }
                         setState(() {
                           Todo newTodo = Todo( // Cria uma classe 'Todo'
                             title: text,
-                            date: DateTime.now(),
+                            date: DateTime.now(), // Pega a data/hora atual
                           );
                           todos.add(newTodo); // Adiciona a classe ao List 'todos'
+                          errorText = null; // Quando o campo estiver preenchido, retira a mensagem de erro
                         });
                         todoController.clear(); // Limpa o controller do textfield, consequentemente limpa o textfield após inserir uma tarefa
 
-                        todoRepository.saveTodoList(todos);
+                        todoRepository.saveTodoList(todos); // Salva o JSON com a lista atualizada (pós-inclusão)
                       },
                       style: ElevatedButton.styleFrom(
                         primary: const Color(0xff00d7f3),
@@ -151,7 +173,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 25,),
+                const SizedBox(height: 25),
                 Flexible(
                   child: ListView(
                     shrinkWrap: true, // O tamanho da lista se torna o tamanho dos itens que houver nela
@@ -164,7 +186,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 25,),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     Expanded(
@@ -173,7 +195,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                         onPressed: (){
-                          showDeleteTodosConfirmationDialog();
+                          showDeleteTodosConfirmationDialog(); // Chama a função de exibição do alertdialog
                         },
                         child: const Text('Limpar Tudo'),
                         style: ElevatedButton.styleFrom(
