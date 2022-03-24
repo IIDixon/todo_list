@@ -19,10 +19,10 @@ class _TodoListPageState extends State<TodoListPage> {
 
   @override
   void initState(){
-    super.initState();
+    super.initState(); // Função chamada quando o app é iniciado
 
-    todoRepository.getTodoList().then((value) {
-      setState(() {
+    todoRepository.getTodoList().then((value) { // Chama a função 'getTodoList', armazena a lista que retornará na variável 'value' que será uma lista
+      setState(() {                             // e depois insere essa lista na lista 'todos', que será carregada na tela as informações armazenadas no fechamento do app
         todos = value;
       });
     });
@@ -65,7 +65,6 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   void showDeleteTodosConfirmationDialog(){
-    print('Chamou a função');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
